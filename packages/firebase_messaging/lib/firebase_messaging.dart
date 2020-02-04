@@ -137,6 +137,14 @@ class FirebaseMessaging {
     }
   }
 
+  final StreamController<String> _apnsTokenStreamController =
+      StreamController<String>.broadcast();
+
+  /// Fires when a new APNS token is generated.
+  Stream<String> get onAPNSTokenRefresh {
+    return _apnsTokenStreamController.stream;
+  }
+
   final StreamController<String> _tokenStreamController =
       StreamController<String>.broadcast();
 
@@ -184,6 +192,10 @@ class FirebaseMessaging {
 
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
+      case "onAPNSToken":
+        final String token = call.arguments;
+        _apnsTokenStreamController.add(token);
+        return null;
       case "onToken":
         final String token = call.arguments;
         _tokenStreamController.add(token);

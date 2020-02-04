@@ -252,6 +252,14 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
   [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
 #endif
 
+  NSUInteger capacity = deviceToken.length * 2;
+  NSMutableString *tokenString = [NSMutableString stringWithCapacity:capacity];
+  const unsigned char *tokenData = deviceToken.bytes;
+  for (int idx = 0; idx < deviceToken.length; ++idx) {
+    [tokenString appendFormat:@"%02X", (int)tokenData[idx]];
+  }
+
+  [_channel invokeMethod:@"onAPNSToken" arguments:tokenString];
   [_channel invokeMethod:@"onToken" arguments:[FIRMessaging messaging].FCMToken];
 }
 
